@@ -21,6 +21,7 @@
 
 char* strcat_delim(char* dest, char* src, char delimiter)
 {
+    /* find null term, copy bytes, append delimiter & null term */
     while (*dest) dest++;
     while (*dest++ = *src++);
     *(dest - 1) = delimiter;
@@ -29,12 +30,12 @@ char* strcat_delim(char* dest, char* src, char delimiter)
 }
 
 /* itoa that writes straight to the buffer, adds a delimiter */
-/* TODO FIX THIS SHIT */
-char* strcat_delim_int(char* dest, long long value, char delimiter)
+char* strcat_delim_int(char* dest, int value, char delimiter)
 {
     /* absolute value */
-    long long n = value >= 0 ? value : -1 * value;
+    int n = value >= 0 ? value : -1 * value;
 
+    /* find null terminator */
     while (*dest) dest++;
 
     int i = 0;
@@ -51,23 +52,21 @@ char* strcat_delim_int(char* dest, long long value, char delimiter)
     if (value < 0)
         *(dest + i++) = '-';
 
-    *(dest + i++) = '\0';
-
-    /* Reverse */
-
-    char* p1 = dest;
-    char* p2 = dest + strlen(dest) - 1;
-    while (p1 < p2)
+    /* Reverse string */
+    char* beg = dest;
+    char* end = dest + i - 1;
+    while (beg < end)
     {
-        char tmp = *p1;
-        *p1++ = *p2;
-        *p2-- = tmp;
+        char tmp = *beg;
+        *beg++ = *end;
+        *end-- = tmp;
     }
 
-    *(dest + --i) = '|';
-    *(dest + ++i) = '\0';
+    /* Append delimiter & null term */
+    *(dest + i++) = delimiter;
+    *(dest + i) = '\0';
 
-    return p2;
+    return (dest + i);
 }
 
 /*+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-
@@ -203,8 +202,8 @@ int main(int argc, char** argv)
             }
         }
 
-        /* append newline */
-        *(++buf_ptr) = '\n';
+        /* change last seperator to newline */
+        *(buf_ptr) = '\n';
     }
 
     /* finally, write the output buffer */
